@@ -38,34 +38,44 @@ namespace Libraries
             return true;
         }
 
+        private static bool IsReading = false;
         internal static async Task<string> SafelyReadAllText(string DirToFile)
         {
-            if (!CanReadFile(DirToFile))
+            if (!CanReadFile(DirToFile) || IsReading)
             {
-                while (!CanReadFile(DirToFile))
+                while (!CanReadFile(DirToFile) || IsReading)
                 {
                     //Wait
                     await Task.Delay(150);
                 }
             }
 
+            IsReading = true;
+            
             var Result = File.ReadAllText(DirToFile);
+            
+            IsReading = false;
 
             return Result;
         }
 
+        private static bool IsWriting = false;
         public static async Task SafelyWriteAllText(string path, string text)
         {
-            if (!CanReadFile(path))
+            if (!CanReadFile(path) || IsWriting)
             {
-                while (!CanReadFile(path))
+                while (!CanReadFile(path) || IsWriting)
                 {
                     //Wait
                     await Task.Delay(150);
                 }
             }
 
+            IsWriting = true;
+            
             File.WriteAllText(path, text);
+            
+            IsWriting = false;
         }
     }
 }
